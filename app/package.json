@@ -1,0 +1,15 @@
+{
+  "name": "devops-demo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Petite application Node.js exposant une page web et des métriques Prometheus",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "prom-client": "^15.1.3"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "uid": "devops-demo",
+  "title": "Démo DevOps — application et VM",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Application en ligne (1 = oui)",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "up{job=\"app\"}", "refId": "A" } ],
+      "fieldConfig": { "defaults": { "mappings": [ { "type": "value", "options": { "0": { "text": "HORS LIGNE", "color": "red" }, "1": { "text": "EN LIGNE", "color": "green" } } } ] }, "overrides": [] }
+    },
+    {
+      "id": 2, "type": "stat", "title": "Requêtes totales",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "sum(app_http_requests_total)", "refId": "A" } ]
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "Requêtes par seconde",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "sum by (route) (rate(app_http_requests_total[1m]))", "legendFormat": "{{route}}", "refId": "A" } ]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Durée moyenne des requêtes (s)",
+      "gridPos": { "x": 0, "y": 5, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "rate(app_http_request_duration_seconds_sum[1m]) / rate(app_http_request_duration_seconds_count[1m])", "legendFormat": "{{route}}", "refId": "A" } ]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "CPU de la VM (%)",
+      "gridPos": { "x": 12, "y": 5, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)", "legendFormat": "CPU", "refId": "A" } ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] }
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Mémoire utilisée de la VM (%)",
+      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)", "legendFormat": "Mémoire", "refId": "A" } ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 }, "overrides": [] }
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Mémoire du processus Node (Mo)",
+      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "process_resident_memory_bytes{job=\"app\"} / 1024 / 1024", "legendFormat": "RSS", "refId": "A" } ]
+    }
+  ]
+}
