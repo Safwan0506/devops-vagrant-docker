@@ -33,7 +33,7 @@ function page() {
   dt{color:#94a3b8} dd{margin:0;font-family:ui-monospace,monospace}
 </style></head>
 <body><main>
-  <h1>🚀 Déploiement automatique réussi : version 2</h1>
+  <h1>🚀 Déploiement automatique réussi : version 3</h1>
   <p>Cette page est servie par un conteneur Docker dans une VM Vagrant.</p>
   <dl>
     <dt>Version</dt><dd class="v">${VERSION.slice(0, 7)}</dd>
