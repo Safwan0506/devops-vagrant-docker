@@ -5,10 +5,14 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY server.js ./
+COPY public ./public
+
+# Dossier des données (monté sur un volume par docker-compose) : appartient à l'utilisateur "node"
+RUN mkdir /data && chown node:node /data
 
 # La version (SHA du commit) est injectée par le pipeline et affichée sur la page
 ARG APP_VERSION=dev
-ENV APP_VERSION=$APP_VERSION PORT=3000
+ENV APP_VERSION=$APP_VERSION PORT=3000 DATA_DIR=/data
 
 USER node
 EXPOSE 3000

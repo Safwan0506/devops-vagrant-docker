@@ -9,7 +9,13 @@ Vagrant.configure("2") do |config|
 
   # Option : rendre aussi la VM visible par les autres appareils du réseau (téléphone, voisin...)
   # Utilisation : $env:BRIDGE="1"; vagrant reload   → la VM reçoit une 2e adresse IP du routeur
-  config.vm.network "public_network" if ENV["BRIDGE"] == "1"
+  # La carte réseau du PC (Wi-Fi ou Ethernet) est choisie automatiquement : la première « Up ».
+  if ENV["BRIDGE"] == "1"
+    vbm = File.exist?("C:/Program Files/Oracle/VirtualBox/VBoxManage.exe") ? "C:/Program Files/Oracle/VirtualBox/VBoxManage.exe" : "VBoxManage"
+    carte = `"#{vbm}" list bridgedifs`.split(/\r?\n\r?\n/).find { |b| b =~ /Status:\s+Up/ }
+    nom = carte && carte[/^Name:\s+(.+?)\s*$/, 1]
+    config.vm.network "public_network", bridge: nom if nom
+  end
 
   config.vm.provider "virtualbox" do |vb|
     vb.name = "devops-vm"

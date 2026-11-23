@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestionnaire de tâches</title>
+<style>
+  :root{--bg:#0f172a;--carte:#1e293b;--bord:#334155;--texte:#e2e8f0;--doux:#94a3b8;--accent:#38bdf8;--ok:#4ade80}
+  *{box-sizing:border-box}
+  body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--texte);margin:0;padding:2rem 1rem;display:flex;justify-content:center}
+  main{width:100%;max-width:560px}
+  .banniere{background:#0c4a6e;border:1px solid var(--accent);border-radius:12px;padding:.7rem 1rem;font-weight:600;margin-bottom:1rem}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:1.5rem;box-shadow:0 10px 40px #0005}
+  h1{margin:0 0 1rem;font-size:1.5rem}
+  form{display:flex;gap:.5rem;margin-bottom:1rem}
+  input[type=text]{flex:1;padding:.7rem .9rem;border-radius:10px;border:1px solid var(--bord);background:var(--bg);color:var(--texte);font-size:1rem}
+  input[type=text]:focus{outline:2px solid var(--accent);border-color:transparent}
+  button{padding:.7rem 1rem;border:0;border-radius:10px;background:var(--accent);color:#082f49;font-weight:700;font-size:1rem;cursor:pointer}
+  button:hover{filter:brightness(1.1)}
+  ul{list-style:none;margin:0;padding:0}
+  li{display:flex;align-items:center;gap:.7rem;padding:.65rem .2rem;border-bottom:1px solid var(--bord)}
+  li:last-child{border-bottom:0}
+  li span{flex:1;word-break:break-word}
+  li.fait span{text-decoration:line-through;color:var(--doux)}
+  li input{width:1.2rem;height:1.2rem;accent-color:var(--ok)}
+  li button{background:transparent;color:var(--doux);padding:.2rem .5rem;font-size:1.1rem}
+  li button:hover{color:#f87171}
+  .vide,.compteur,.erreur{color:var(--doux);font-size:.9rem;text-align:center;margin:1rem 0 0}
+  .erreur{color:#f87171}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;margin:1.2rem 0 0;font-size:.85rem;color:var(--doux)}
+  dd{margin:0;font-family:ui-monospace,monospace;color:var(--texte)} .v{color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <div class="banniere">🚀 {{BANNIERE}}</div>
+  <div class="carte">
+    <h1>📝 Mes tâches</h1>
+    <form id="form">
+      <input type="text" id="titre" placeholder="Nouvelle tâche…" maxlength="200" autocomplete="off" required>
+      <button type="submit">Ajouter</button>
+    </form>
+    <ul id="liste"></ul>
+    <p class="vide" id="vide" hidden>Aucune tâche pour l’instant.</p>
+    <p class="compteur" id="compteur"></p>
+    <p class="erreur" id="erreur" hidden></p>
+    <dl>
+      <dt>Version</dt><dd class="v">{{VERSION}}</dd>
+      <dt>Conteneur</dt><dd>{{CONTENEUR}}</dd>
+      <dt>Démarré le</dt><dd>{{DEMARRE}}</dd>
+    </dl>
+  </div>
+</main>
+<script>
+const liste = document.getElementById('liste');
+const vide = document.getElementById('vide');
+const compteur = document.getElementById('compteur');
+const erreur = document.getElementById('erreur');
+
+async function appel(url, options) {
+  try {
+    const r = await fetch(url, options);
+    if (!r.ok && r.status !== 204) throw new Error((await r.json()).erreur || 'Erreur');
+    erreur.hidden = true;
+    return r.status === 204 ? null : r.json();
+  } catch (e) { erreur.textContent = e.message; erreur.hidden = false; throw e; }
+}
+
+function dessiner(taches) {
+  liste.replaceChildren();
+  for (const t of taches) {
+    const li = document.createElement('li');
+    if (t.fait) li.className = 'fait';
+    const coche = Object.assign(document.createElement('input'), { type: 'checkbox', checked: t.fait });
+    coche.onchange = () => appel('/api/tasks/' + t.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fait: coche.checked }) }).then(charger);
+    const texte = document.createElement('span'); texte.textContent = t.titre;
+    const suppr = Object.assign(document.createElement('button'), { textContent: '✕', title: 'Supprimer' });
+    suppr.onclick = () => appel('/api/tasks/' + t.id, { method: 'DELETE' }).then(charger);
+    li.append(coche, texte, suppr);
+    liste.append(li);
+  }
+  vide.hidden = taches.length > 0;
+  const faites = taches.filter((t) => t.fait).length;
+  compteur.textContent = taches.length ? faites + ' terminée(s) sur ' + taches.length : '';
+}
+
+const charger = () => appel('/api/tasks').then(dessiner);
+
+document.getElementById('form').onsubmit = async (e) => {
+  e.preventDefault();
+  const champ = document.getElementById('titre');
+  await appel('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ titre: champ.value }) });
+  champ.value = '';
+  charger();
+};
+charger();
+</script>
+</body>
+</html>

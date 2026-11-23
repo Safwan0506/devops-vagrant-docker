@@ -13,6 +13,8 @@ services:
         APP_VERSION: ${APP_VERSION:-dev}
     container_name: demo-app
     restart: unless-stopped
+    volumes:
+      - app-data:/data   # les tâches survivent aux redéploiements
     ports:
       - "80:3000"   # http://192.168.56.10 (sans numéro de port)
 
@@ -54,5 +56,6 @@ services:
       - prometheus
 
 volumes:
+  app-data:
   prometheus-data:
   grafana-data:

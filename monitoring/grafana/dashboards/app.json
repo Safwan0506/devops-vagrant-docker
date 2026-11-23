@@ -50,6 +50,24 @@
       "gridPos": { "x": 12, "y": 13, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [ { "expr": "process_resident_memory_bytes{job=\"app\"} / 1024 / 1024", "legendFormat": "RSS", "refId": "A" } ]
+    },
+    {
+      "id": 8, "type": "stat", "title": "Tâches enregistrées",
+      "gridPos": { "x": 0, "y": 21, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "app_tasks{etat=\"total\"}", "refId": "A" } ]
+    },
+    {
+      "id": 9, "type": "stat", "title": "Tâches terminées",
+      "gridPos": { "x": 6, "y": 21, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "app_tasks{etat=\"terminees\"}", "refId": "A" } ]
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "Tâches créées (par minute)",
+      "gridPos": { "x": 12, "y": 21, "w": 12, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "expr": "increase(app_tasks_created_total[1m])", "legendFormat": "créations", "refId": "A" } ]
     }
   ]
 }
