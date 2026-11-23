@@ -7,6 +7,10 @@ Vagrant.configure("2") do |config|
   # Adresse IP fixe : c'est elle qu'on tape dans le navigateur (http://192.168.56.10)
   config.vm.network "private_network", ip: "192.168.56.10"
 
+  # Option : rendre aussi la VM visible par les autres appareils du réseau (téléphone, voisin...)
+  # Utilisation : $env:BRIDGE="1"; vagrant reload   → la VM reçoit une 2e adresse IP du routeur
+  config.vm.network "public_network" if ENV["BRIDGE"] == "1"
+
   config.vm.provider "virtualbox" do |vb|
     vb.name = "devops-vm"
     vb.memory = 3072

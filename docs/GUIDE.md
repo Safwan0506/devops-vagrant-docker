@@ -50,12 +50,20 @@ Sur GitHub, le runner `vagrant-vm` doit apparaître **Idle** (vert).
 ## Étape 5 — Premier déploiement
 
 Dans l'onglet **Actions**, relancer le workflow (**Run workflow**) ou refaire un push.
-Les deux jobs `test` et `deploy` passent au vert.
-📸 **7** : l'exécution du workflow avec les deux jobs verts.
-📸 **8** : le détail du job `deploy`.
+Les trois jobs `test`, `build` et `deploy` passent au vert : l'image est construite puis publiée sur GHCR, et la VM la télécharge.
+📸 **7** : l'exécution du workflow avec les trois jobs verts.
+📸 **8** : le détail du job `deploy` (ligne `docker compose pull`).
+📸 **8 bis** : page du dépôt → **Packages** (l'image publiée), ou `vagrant ssh -c "docker images"`.
 
 Ouvrir **http://192.168.56.10** dans le navigateur.
 📸 **9** : la page de l'application (avec l'adresse IP visible dans la barre d'adresse).
+
+**Rendre l'adresse visible par d'autres appareils** (option, si le prof veut la tester depuis un autre appareil) :
+```powershell
+$env:BRIDGE="1"; vagrant reload
+vagrant ssh -c "ip -4 addr show enp0s9"   # 2e adresse IP, donnée par ton routeur
+```
+Tout appareil connecté au même Wi-Fi peut alors ouvrir `http://<cette adresse>`.
 
 ## Étape 6 — Observabilité
 

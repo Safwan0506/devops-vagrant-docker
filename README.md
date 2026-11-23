@@ -10,13 +10,14 @@ Prometheus et Grafana supervisent l'application et la VM.
  PC (Windows)                      GitHub
  ┌───────────┐  git push   ┌──────────────────────┐
  │ code      │ ──────────► │ Actions               │
- └───────────┘             │  1. test (ubuntu)     │
-                           │  2. deploy ───────────┼──┐
+ └───────────┘             │  1. test              │
+                           │  2. build ──► image publiée sur GHCR
+                           │  3. deploy ───────────┼──┐
                            └──────────────────────┘  │ le runner de la VM
  VM Vagrant 192.168.56.10                            │ va chercher le job
  ┌────────────────────────────────────────────────┐  │
  │ runner GitHub (self-hosted) ◄──────────────────┼──┘
- │      │ docker compose up -d --build            │
+ │      │ docker compose pull + up -d (image GHCR)│
  │      ▼                                         │
  │ app :80 · Prometheus :9090 · Grafana :3000     │
  │ node-exporter (métriques de la VM)             │

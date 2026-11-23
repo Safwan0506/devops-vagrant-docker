@@ -1,6 +1,9 @@
 # Application + observabilité (Prometheus, Grafana, node-exporter)
 services:
   app:
+    # En production (pipeline) : image téléchargée depuis GHCR via APP_IMAGE.
+    # En local sans APP_IMAGE : construite à partir de ./app
+    image: ${APP_IMAGE:-demo-app:local}
     build:
       context: ./app
       args:
