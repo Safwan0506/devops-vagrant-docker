@@ -7,8 +7,10 @@ set -euo pipefail
 
 REPO_URL="${1:?URL du dépôt manquante}"
 TOKEN="${2:?token manquant}"
-VERSION="2.321.0"
+# Toujours la dernière version : GitHub refuse les runners trop anciens
+VERSION="$(curl -fsSL https://api.github.com/repos/actions/runner/releases/latest | jq -r .tag_name | sed 's/^v//')"
 DIR="$HOME/actions-runner"
+echo ">>> Runner version ${VERSION}"
 
 mkdir -p "$DIR" && cd "$DIR"
 if [ ! -f ./config.sh ]; then
