@@ -1,4 +1,7 @@
 # Application + observabilité (Prometheus, Grafana, node-exporter)
+# Nom de projet fixe : le même, qu'on lance la pile à la main ou via le runner
+name: devops-demo
+
 services:
   app:
     # En production (pipeline) : image téléchargée depuis GHCR via APP_IMAGE.
