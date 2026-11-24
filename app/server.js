@@ -13,7 +13,7 @@ const DATA_FILE = path.join(process.env.DATA_DIR || path.join(__dirname, 'data')
 const STARTED = new Date();
 
 // Texte de la bannière : c'est la ligne à modifier pendant la démonstration
-const BANNIERE = 'Déploiement automatique réussi : version 6';
+const BANNIERE = 'Déploiement automatique réussi : version 7';
 
 const PAGE = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
 
