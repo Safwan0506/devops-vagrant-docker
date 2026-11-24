@@ -50,6 +50,7 @@ function json(res, status, corps) {
 function lireCorps(req) {
   return new Promise((resolve, reject) => {
     let brut = '';
+    req.setEncoding('utf8'); // évite de couper un caractère accentué entre deux morceaux
     req.on('data', (c) => { brut += c; if (brut.length > 10_000) { reject(Object.assign(new Error('trop gros'), { status: 413 })); req.destroy(); } });
     req.on('end', () => { try { resolve(brut ? JSON.parse(brut) : {}); } catch { reject(Object.assign(new Error('JSON invalide'), { status: 400 })); } });
   });

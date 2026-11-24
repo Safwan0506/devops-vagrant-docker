@@ -72,10 +72,10 @@ function dessiner(taches) {
     const li = document.createElement('li');
     if (t.fait) li.className = 'fait';
     const coche = Object.assign(document.createElement('input'), { type: 'checkbox', checked: t.fait });
-    coche.onchange = () => appel('/api/tasks/' + t.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fait: coche.checked }) }).then(charger);
+    coche.onchange = () => appel('/api/tasks/' + t.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fait: coche.checked }) }).then(charger, resynchroniser);
     const texte = document.createElement('span'); texte.textContent = t.titre;
     const suppr = Object.assign(document.createElement('button'), { textContent: '✕', title: 'Supprimer' });
-    suppr.onclick = () => appel('/api/tasks/' + t.id, { method: 'DELETE' }).then(charger);
+    suppr.onclick = () => appel('/api/tasks/' + t.id, { method: 'DELETE' }).then(charger, resynchroniser);
     li.append(coche, texte, suppr);
     liste.append(li);
   }
@@ -85,6 +85,8 @@ function dessiner(taches) {
 }
 
 const charger = () => appel('/api/tasks').then(dessiner);
+// En cas d'échec d'une action : on remet l'écran dans l'état réel du serveur (sans masquer l'erreur)
+const resynchroniser = () => fetch('/api/tasks').then((r) => r.json()).then(dessiner).catch(() => {});
 
 document.getElementById('form').onsubmit = async (e) => {
   e.preventDefault();
